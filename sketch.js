@@ -6,10 +6,12 @@
  */
 let font
 let instructions
+let cards
 
 
 function preload() {
     font = loadFont('data/consola.ttf')
+    cards = loadJSON('scryfall-snc.json')
 }
 
 
@@ -24,6 +26,10 @@ function setup() {
     instructions.html(`<pre>
         [1,2,3,4,5] → no function
         z → freeze sketch</pre>`)
+
+    console.log(cards)
+
+    noLoop()
 }
 
 
