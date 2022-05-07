@@ -20,6 +20,7 @@ function setup() {
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
+    background(234, 34, 24)
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -27,14 +28,45 @@ function setup() {
         [1,2,3,4,5] → no function
         z → freeze sketch</pre>`)
 
-    console.log(cards)
+    cardData = getCardData(cards)
+    console.log(cardData)
 
     noLoop()
 }
 
 
+// gets the data of the cards in the json file
+function getCardData(cards) {
+    let listOfCards = cards.data
+
+    // the relevant card data
+    let cardData = []
+    for (let card of listOfCards) {
+        let typeText = card.name + " " + card.mana_cost + "\n" + card.type_line + "\n" + card.oracle_text
+        let isThereAPowerAndToughness = new RegExp('[Cc]reature|[Vv]ehicle')
+        if (isThereAPowerAndToughness.test(card.type_line)) {
+            typeText += "\n" + card.power + "/" + card.toughness
+        }
+        if (card.flavor_text) {
+            typeText += "\n" + card.flavor_text
+        }
+
+        cardData.push({
+            'typeText': typeText,
+            'name': card.name,
+            'manaCost': card.cmc,
+            ''
+        })
+    }
+
+
+    return cardData
+}
+
+// •→bullet point
+
 function draw() {
-    background(234, 34, 24)
+    // background(234, 34, 24)
 
 
 
