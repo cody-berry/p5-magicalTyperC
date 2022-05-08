@@ -33,9 +33,10 @@ function setup() {
     cardData.sort(sortCardsByID)
 
     console.log(cardData)
-
-    noLoop()
 }
+
+// updates the card and
+
 
 // compares 2 cards by their id
 function sortCardsByID(firstCard, secondCard) {
@@ -82,7 +83,7 @@ function getCardData(cards) {
 // *=•
 
 function draw() {
-    // background(234, 34, 24)
+    background(234, 34, 24)
 
 
 
