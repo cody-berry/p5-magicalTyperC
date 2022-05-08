@@ -29,9 +29,23 @@ function setup() {
         z → freeze sketch</pre>`)
 
     cardData = getCardData(cards)
+
+    cardData.sort(sortCardsByID)
+
     console.log(cardData)
 
     noLoop()
+}
+
+// compares 2 cards by their id
+function sortCardsByID(firstCard, secondCard) {
+    if (firstCard.collectorID === secondCard.collectorID) {
+        return 0
+    } if (firstCard.collectorID < secondCard.collectorID) {
+        return -1
+    } if (firstCard.collectorID > secondCard.collectorID) {
+        return 1
+    }
 }
 
 
@@ -54,8 +68,10 @@ function getCardData(cards) {
         cardData.push({
             'typeText': typeText,
             'name': card.name,
-            'manaCost': card.cmc,
-            ''
+            'manaCost': int(card.cmc),
+            'collectorID': int(card.collector_number),
+            'artCropPNG': card.image_uris.art_crop,
+            'cardPNG': card.image_uris.normal
         })
     }
 
@@ -63,7 +79,7 @@ function getCardData(cards) {
     return cardData
 }
 
-// •→bullet point
+// *=•
 
 function draw() {
     // background(234, 34, 24)
