@@ -32,7 +32,7 @@ function setup() {
 
     cardData.sort(sortCardsByID)
 
-    console.log(cardData)
+    console.log(random(cardData))
 }
 
 // updates the card and
@@ -81,6 +81,7 @@ function getCardData(cards) {
 }
 
 // *=•
+// -=—
 
 function draw() {
     background(234, 34, 24)
