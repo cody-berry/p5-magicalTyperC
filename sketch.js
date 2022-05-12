@@ -7,6 +7,7 @@
 let font
 let instructions
 let cards
+let passage // a passage that we're going to type
 
 
 function preload() {
@@ -28,11 +29,15 @@ function setup() {
         [1,2,3,4,5] → no function
         z → freeze sketch</pre>`)
 
-    cardData = getCardData(cards)
+    let cardData = getCardData(cards)
 
     cardData.sort(sortCardsByID)
 
-    console.log(random(cardData))
+    let randomCard = random(cardData)
+
+    console.log(randomCard)
+
+    passage = new Passage(randomCard.typeText)
 }
 
 // updates the card and
@@ -86,7 +91,7 @@ function getCardData(cards) {
 function draw() {
     background(234, 34, 24)
 
-
+    passage.show()
 
     displayDebugCorner()
 }
@@ -110,7 +115,7 @@ function displayDebugCorner() {
 
 function keyPressed() {
     /* stop sketch */
-    if (key === 'z') {
+    if (keyCode === 97) { // 97 is the keycode for numpad 1
         noLoop()
         instructions.html(`<pre>
             sketch stopped</pre>`)
