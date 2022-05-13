@@ -8,16 +8,21 @@ let font
 let instructions
 let cards
 let passage // a passage that we're going to type
+let correctSound // the sound that we're going to play when we get a correct key
+let incorrectSound // the sound that we're going to play when we get an
+// incorrect key
 
 
 function preload() {
     font = loadFont('data/consola.ttf')
     cards = loadJSON('scryfall-snc.json')
+    correctSound = loadSound('data/correct.wav')
+    incorrectSound = loadSound('data/incorrect.wav')
 }
 
 
 function setup() {
-    let cnv = createCanvas(600, 300)
+    let cnv = createCanvas(960, 540)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
@@ -35,9 +40,9 @@ function setup() {
 
     let randomCard = random(cardData)
 
-    console.log(randomCard)
+    console.log(randomCard.typeText)
 
-    passage = new Passage(randomCard.typeText)
+    passage = new Passage(randomCard.typeText + " \n")
 }
 
 // updates the card and
@@ -94,6 +99,8 @@ function draw() {
     passage.show()
 
     displayDebugCorner()
+
+
 }
 
 
@@ -120,4 +127,34 @@ function keyPressed() {
         instructions.html(`<pre>
             sketch stopped</pre>`)
     }
+    /* a key has been typed! */
+    else {
+        // otherwise....
+        processKeyTyped(key)
+    }
+}
+
+// processes given key
+function processKeyTyped(key) {
+    // asterisk (*) = bullet point (•), and dash (-) = emdash (—). This is
+    // the key that needs to be typed in order to get the character correct.
+    let correctKey = passage.getCurrentChar(passage.index)
+    if (correctKey === "•") {
+        correctKey = "*"
+    } else if (correctKey === "—") {
+        correctKey = "-"
+    } if (passage.text.substring(passage.index, passage.index + 1) === "\n") {
+        correctKey = "Enter"
+    }
+    if (key !== "Shift" && key !== "Tab" && key !== "CapsLock") {
+        if (key === correctKey) {
+            passage.setCorrect()
+            correctSound.play()
+        } else {
+            passage.setIncorrect()
+            incorrectSound.play()
+        }
+    }
+
+    print(key + "🆚" + correctKey + ", " + passage.index)
 }
