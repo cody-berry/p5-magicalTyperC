@@ -32,8 +32,7 @@ class Passage {
             this.#handleNewLines(i, cursor)
         }
 
-        fill(240, 100, 100)
-        line(this.lineWrapXpos, 0, this.lineWrapXpos, height)
+        this.#drawCurrentWordBar(charPos)
     }
 
     getCurrentChar(i) {
@@ -90,6 +89,40 @@ class Passage {
     // are we done with the passage?
     #finished() {
         return this.index >= this.text.length
+    }
+
+    // draw a bar on the word that we're typing
+    #drawCurrentWordBar(charPos) {
+        // the characters we haven't already typed
+        let restOfPassage = this.text.substring(this.index)
+
+        // the next space (newline later)
+        let nextDelimiter = restOfPassage.indexOf(" ") + this.index
+        let nextNewline = restOfPassage.indexOf("\n") + this.index
+        if (nextNewline < nextDelimiter + 1) {
+            nextDelimiter = nextNewline
+        }
+
+        // the last space we typed
+        let previousDelimiter = 0
+
+        for (let i=0; i<this.index; i++) {
+            if (this.getCurrentChar(i) === ' ' || this.text.substring(i, i+1) === '\n') {
+                previousDelimiter = i+1
+            }
+        }
+
+        // the position of the next space
+        let ndPosition = charPos[nextDelimiter]
+
+        // the position of the previous space
+        let pdPosition = charPos[previousDelimiter]
+
+        // draw a gray line above the two positions in the padding
+        stroke(0, 0, 100)
+        strokeWeight(2)
+        line(ndPosition.x, ndPosition.y-textAscent()-this.LINE_SPACING/2,
+             pdPosition.x, pdPosition.y-textAscent()-this.LINE_SPACING/2)
     }
 }
 
