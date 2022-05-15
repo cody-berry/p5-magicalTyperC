@@ -99,7 +99,7 @@ class Passage {
         // the next space (newline later)
         let nextDelimiter = restOfPassage.indexOf(" ") + this.index
         let nextNewline = restOfPassage.indexOf("\n") + this.index
-        if (nextNewline < nextDelimiter + 1) {
+        if (nextNewline < nextDelimiter) {
             nextDelimiter = nextNewline
         }
 
@@ -118,11 +118,13 @@ class Passage {
         // the position of the previous space
         let pdPosition = charPos[previousDelimiter]
 
-        // draw a gray line above the two positions in the padding
-        stroke(0, 0, 100)
-        strokeWeight(2)
-        line(ndPosition.x, ndPosition.y-textAscent()-this.LINE_SPACING/2,
-             pdPosition.x, pdPosition.y-textAscent()-this.LINE_SPACING/2)
+        if (!(ndPosition.equals(pdPosition) || this.text.substring(previousDelimiter, nextDelimiter))) {
+            // draw a gray line above the two positions in the padding
+            stroke(0, 0, 100)
+            strokeWeight(2)
+            line(ndPosition.x, ndPosition.y - textAscent() - this.LINE_SPACING / 2,
+                pdPosition.x, pdPosition.y - textAscent() - this.LINE_SPACING / 2)
+        }
     }
 }
 

@@ -45,7 +45,7 @@ function setup() {
     passage = new Passage(randomCard.typeText + " \n")
 }
 
-// updates the card and
+
 
 
 // compares 2 cards by their id
@@ -67,22 +67,23 @@ function getCardData(cards) {
     // the relevant card data
     let cardData = []
     for (let card of listOfCards) {
-        let typeText = card.name + " " + card.mana_cost + "\n" + card.type_line + "\n" + card.oracle_text
+        let typeText = card['name'] + " " + card['mana_cost'] + "\n" +
+            card['type_line'] + "\n" + card['oracle_text']
         let isThereAPowerAndToughness = new RegExp('[Cc]reature|[Vv]ehicle')
         if (isThereAPowerAndToughness.test(card.type_line)) {
-            typeText += "\n" + card.power + "/" + card.toughness
+            typeText += "\n" + card['power'] + "/" + card['toughness']
         }
-        if (card.flavor_text) {
-            typeText += "\n" + card.flavor_text
+        if (card['flavor_text']) {
+            typeText += "\n" + card['flavor_text']
         }
 
         cardData.push({
             'typeText': typeText,
-            'name': card.name,
-            'manaCost': int(card.cmc),
-            'collectorID': int(card.collector_number),
-            'artCropPNG': card.image_uris.art_crop,
-            'cardPNG': card.image_uris.normal
+            'name': card['name'],
+            'manaCost': int(card['cmc']),
+            'collectorID': int(card['collector_number']),
+            'artCropPNG': card['image_uris']['art_crop'],
+            'cardPNG': card['image_uris']['normal']
         })
     }
 
