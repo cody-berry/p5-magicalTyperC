@@ -22,10 +22,15 @@ class Passage {
         let cursor = new p5.Vector(this.LEFT_MARGIN, this.TOP_MARGIN)
         let charPos = [] // a list of character positions
         for (let i = 0; i < this.text.length; i++) {
+            fill(0, 0, 100)
             charPos.push(cursor.copy())
 
             let char = this.text.charAt(i)
             text(char, cursor.x, cursor.y)
+
+            if (i < this.index) {
+                this.#drawHighlightBox(i, cursor)
+            }
 
             cursor.x += textWidth(char)
 
@@ -33,6 +38,10 @@ class Passage {
         }
 
         this.#drawCurrentWordBar(charPos)
+
+        stroke(0, 0, 100)
+        strokeWeight(2)
+        this.#drawTextCursor(charPos)
     }
 
     getCurrentChar(i) {
@@ -58,6 +67,7 @@ class Passage {
 
         }
         if (this.text.substring(i, i+1) === "\n") { // next two letters
+            this.#drawReturn(textWidth(' '), textAscent(), 3, new p5.Vector(cursor.x - textWidth(' '), cursor.y))
             this.#wrapCursorPosition(cursor)
         }
     }
@@ -118,13 +128,70 @@ class Passage {
         // the position of the previous space
         let pdPosition = charPos[previousDelimiter]
 
-        if (!(ndPosition.equals(pdPosition) || this.text.substring(previousDelimiter, nextDelimiter))) {
+        if (!(ndPosition.equals(pdPosition) || this.text.substring(previousDelimiter, nextDelimiter) === ' ')) {
             // draw a gray line above the two positions in the padding
             stroke(0, 0, 100)
             strokeWeight(2)
             line(ndPosition.x, ndPosition.y - textAscent() - this.LINE_SPACING / 2,
                 pdPosition.x, pdPosition.y - textAscent() - this.LINE_SPACING / 2)
         }
+    }
+
+    #drawTextCursor(charPos) {
+        let cursor = charPos[this.index]
+        cursor.y += textDescent() + this.LINE_SPACING/2
+        line(cursor.x, cursor.y, cursor.x + textWidth(' '), cursor.y)
+    }
+
+    #drawHighlightBox(i, cursor) {
+        // we fill the correct color, and if the correct list shows that
+        // it's incorrect at index i, we fill the incorrect color. Also, we
+        // noStroke().
+        noStroke()
+        fill(90, 100, 70, 46)
+
+        if (this.correctList[i] === false) {
+            fill(0, 100, 70, 46)
+        }
+
+        // draw a rectangle that starts at the most definite top-left corner
+        // of the character. Its height is the difference between the
+        // top-left corner of the box and the lowest point the text could
+        // ever get.
+        rect(cursor.x, cursor.y-textAscent(), textWidth(' '), textAscent()+textDescent(), 2)
+    }
+
+    #drawReturn(w, h, r, cursor) {
+        push()
+        translate(cursor.x, cursor.y)
+        // the top right corner of the arrow
+        let TR = new p5.Vector(3*w/4, -7*h/8)
+
+        // the bottom right corner of the arrow
+        let BR = new p5.Vector(3*w/4, -h/4)
+
+        // the bottom left corner of the arrow, also the triangle tip
+        let BL = new p5.Vector(w/4, -h/4)
+
+        // our line
+        stroke(0, 0, 50)
+        strokeWeight(2)
+        strokeJoin(ROUND)
+        noFill()
+        beginShape()
+        vertex(TR.x, TR.y)
+        vertex(BR.x, BR.y)
+        vertex(BL.x+1, BL.y) // move the bottom-left vertex right so that it
+        // doesn't show up when we draw our triangle
+        endShape()
+
+        // our triangle
+        strokeWeight(1)
+        fill(0, 0, 50)
+        translate(-r/2, 0)
+        triangle(BL.x, BL.y, BL.x + r, BL.y + sqrt(3)*r/3, BL.x + r, BL.y - sqrt(3)*r/3)
+
+        pop()
     }
 }
 
