@@ -16,9 +16,18 @@ class Passage {
 
         // what is the space between each line?
         this.LINE_SPACING = 3
+
+        // how many lines it takes to display the current passage. It'll be
+        // useful for showing the bounding box.
+        this.linesDisplayed = 0
     }
 
     show() {
+        fill(0, 0, 100, 3)
+        this.#showBoundingBox()
+
+        this.linesDisplayed = 0
+
         let cursor = new p5.Vector(this.LEFT_MARGIN, this.TOP_MARGIN)
         let charPos = [] // a list of character positions
         for (let i = 0; i < this.text.length; i++) {
@@ -44,6 +53,26 @@ class Passage {
         this.#drawTextCursor(charPos)
     }
 
+    // shows the bounding box
+    #showBoundingBox() {
+        // the top-left corner of our bounding box
+        let boundingBoxTL = new p5.Vector(this.LEFT_MARGIN-10, this.TOP_MARGIN - textAscent() - this.LINE_SPACING)
+
+        // the top-right corner of our bounding box
+        let boundingBoxTR = new p5.Vector(this.lineWrapXpos+10, this.TOP_MARGIN - textAscent() - this.LINE_SPACING)
+
+        // the y-coordinate of the bottom of our bounding box
+        let boxBottomY = this.linesDisplayed*(this.LINE_SPACING + textAscent() + textDescent())
+
+        // the bottom-left corner of our bounding box. We don't need the
+        // bottom-right corner because since we only need the width and the
+        // height, we only need the vertices of the rectangle that are
+        // horizontally or vertically connected to the top-left corner.
+        let boundingBoxBL = new p5.Vector(this.LEFT_MARGIN-10, this.TOP_MARGIN + boxBottomY)
+
+        rect(boundingBoxTL.x, boundingBoxTL.y, boundingBoxTR.x - boundingBoxTL.x, boundingBoxBL.y - boundingBoxTL.y)
+    }
+
     getCurrentChar(i) {
         return this.text.charAt(i)
     }
@@ -58,16 +87,9 @@ class Passage {
             if (cursor.x + textWidth(currentWord) > this.lineWrapXpos) {
                 this.#wrapCursorPosition(cursor)
             }
-
-            if (frameCount === 100) {
-                console.log(restOfPassage)
-                console.log(nextDelimiter)
-                console.log(currentWord)
-            }
-
         }
         if (this.text.substring(i, i+1) === "\n") { // next two letters
-            this.#drawReturn(textWidth(' '), textAscent(), 3, new p5.Vector(cursor.x - textWidth(' '), cursor.y))
+            this.#drawReturn(textWidth(' '), textAscent(), 3, new p5.Vector(cursor.x - textWidth(' ') + 2, cursor.y))
             this.#wrapCursorPosition(cursor)
         }
     }
@@ -75,6 +97,7 @@ class Passage {
     #wrapCursorPosition(cursor) {
         cursor.x = this.LEFT_MARGIN
         cursor.y += textAscent() + textDescent() + this.LINE_SPACING
+        this.linesDisplayed += 1
     }
 
     // sets the next character's correct status to 'true'.
@@ -91,13 +114,13 @@ class Passage {
 
     // advances to the next character.
     #advance() {
-        if (!this.#finished()) {
+        if (!this.finished()) {
             this.index++
         }
     }
 
     // are we done with the passage?
-    #finished() {
+    finished() {
         return this.index >= this.text.length
     }
 
@@ -130,7 +153,7 @@ class Passage {
 
         if (!(ndPosition.equals(pdPosition) || this.text.substring(previousDelimiter, nextDelimiter) === ' ')) {
             // draw a gray line above the two positions in the padding
-            stroke(0, 0, 100)
+            stroke(0, 0, 50)
             strokeWeight(2)
             line(ndPosition.x, ndPosition.y - textAscent() - this.LINE_SPACING / 2,
                 pdPosition.x, pdPosition.y - textAscent() - this.LINE_SPACING / 2)

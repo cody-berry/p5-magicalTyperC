@@ -11,6 +11,9 @@ let passage // a passage that we're going to type
 let correctSound // the sound that we're going to play when we get a correct key
 let incorrectSound // the sound that we're going to play when we get an
 // incorrect key
+let img // the image of the randomly-selected card in setup() or the updated
+// card in updateCard()
+let cardData // the useful data in the cards
 
 
 function preload() {
@@ -25,7 +28,7 @@ function setup() {
     let cnv = createCanvas(960, 540)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
-    textFont(font, 14)
+    textFont(font, 20)
     background(234, 34, 24)
 
     /* initialize instruction div */
@@ -34,18 +37,25 @@ function setup() {
         [1,2,3,4,5] → no function
         z → freeze sketch</pre>`)
 
-    let cardData = getCardData(cards)
+    cardData = getCardData(cards)
 
     cardData.sort(sortCardsByID)
 
-    let randomCard = random(cardData)
-
-    console.log(randomCard.typeText)
-
-    passage = new Passage(randomCard.typeText + " \n")
+    updateCard(round(random(0, cardData.length-1)))
 }
 
 
+// selects the card with the given collector number, given that the card
+// data is sorted by the collector number
+function updateCard(collectorID) {
+    let randomCard = cardData[collectorID]
+
+    console.log(randomCard)
+
+    img = loadImage(randomCard['cardPNG'])
+
+    passage = new Passage(randomCard['typeText'] + " \n")
+}
 
 
 // compares 2 cards by their id
@@ -70,7 +80,7 @@ function getCardData(cards) {
         let typeText = card['name'] + " " + card['mana_cost'] + "\n" +
             card['type_line'] + "\n" + card['oracle_text']
         let isThereAPowerAndToughness = new RegExp('[Cc]reature|[Vv]ehicle')
-        if (isThereAPowerAndToughness.test(card.type_line)) {
+        if (isThereAPowerAndToughness.test(card['type_line'])) {
             typeText += "\n" + card['power'] + "/" + card['toughness']
         }
         if (card['flavor_text']) {
@@ -83,7 +93,7 @@ function getCardData(cards) {
             'manaCost': int(card['cmc']),
             'collectorID': int(card['collector_number']),
             'artCropPNG': card['image_uris']['art_crop'],
-            'cardPNG': card['image_uris']['normal']
+            'cardPNG': card['image_uris']['border_crop']
         })
     }
 
@@ -97,7 +107,13 @@ function getCardData(cards) {
 function draw() {
     background(234, 34, 24)
 
+    if (passage.finished()) {
+        updateCard(round(random(0, cardData.length - 1)))
+    }
+
     passage.show()
+
+    image(img, width/2 + 75, 50, width/2 - 150, height-100)
 
     displayDebugCorner()
 
@@ -127,6 +143,7 @@ function keyPressed() {
         noLoop()
         instructions.html(`<pre>
             sketch stopped</pre>`)
+    } if (keyCode === 98) { // 98 is the keycode for numpad 2
     }
     /* a key has been typed! */
     else {
