@@ -24,7 +24,10 @@ class Passage {
 
     show() {
         fill(0, 0, 100, 3)
-        this.#showBoundingBox()
+
+        // showBoundingBox() also returns the bottom y-coordinate of the
+        // bounding box.
+        let boxBottomY = this.#showBoundingBox()
 
         this.linesDisplayed = 0
 
@@ -51,6 +54,21 @@ class Passage {
         stroke(0, 0, 100)
         strokeWeight(2)
         this.#drawTextCursor(charPos)
+
+        noStroke()
+        fill(234, 34, 24)
+        beginShape()
+        vertex(0, 0)
+        vertex(0, height)
+        vertex(width, height)
+        vertex(width, 0)
+        beginContour()
+        vertex(this.lineWrapXpos, this.TOP_MARGIN)
+        vertex(this.lineWrapXpos, this.TOP_MARGIN + boxBottomY)
+        vertex(this.LEFT_MARGIN, this.TOP_MARGIN + boxBottomY)
+        vertex(this.LEFT_MARGIN, this.TOP_MARGIN)
+        endContour()
+        endShape(CLOSE)
     }
 
     // shows the bounding box
@@ -71,6 +89,11 @@ class Passage {
         let boundingBoxBL = new p5.Vector(this.LEFT_MARGIN-10, this.TOP_MARGIN + boxBottomY)
 
         rect(boundingBoxTL.x, boundingBoxTL.y, boundingBoxTR.x - boundingBoxTL.x, boundingBoxBL.y - boundingBoxTL.y)
+
+        // and now let's return the boxBottomY so that the caller knows the
+        // y coordinate of the bottom contour.
+
+        return boxBottomY
     }
 
     getCurrentChar(i) {
