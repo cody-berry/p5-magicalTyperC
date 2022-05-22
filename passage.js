@@ -20,6 +20,9 @@ class Passage {
         // how many lines it takes to display the current passage. It'll be
         // useful for showing the bounding box.
         this.linesDisplayed = 0
+
+        // how many lines we can display that fits our bounding box.
+        this.maximumLinesInBounds = 8
     }
 
     show() {
@@ -63,10 +66,10 @@ class Passage {
         vertex(width, height)
         vertex(width, 0)
         beginContour()
-        vertex(this.lineWrapXpos, this.TOP_MARGIN)
-        vertex(this.lineWrapXpos, this.TOP_MARGIN + boxBottomY)
-        vertex(this.LEFT_MARGIN, this.TOP_MARGIN + boxBottomY)
-        vertex(this.LEFT_MARGIN, this.TOP_MARGIN)
+        vertex(this.lineWrapXpos + 10, this.TOP_MARGIN - textAscent() - this.LINE_SPACING)
+        vertex(this.lineWrapXpos + 10, this.TOP_MARGIN + boxBottomY)
+        vertex(this.LEFT_MARGIN - 10, this.TOP_MARGIN + boxBottomY)
+        vertex(this.LEFT_MARGIN - 10, this.TOP_MARGIN - textAscent() - this.LINE_SPACING)
         endContour()
         endShape(CLOSE)
     }
