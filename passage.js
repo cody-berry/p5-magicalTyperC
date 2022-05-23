@@ -22,14 +22,22 @@ class Passage {
         this.linesDisplayed = 0
 
         // how many lines we can display that fits our bounding box.
-        this.maximumLinesInBounds = 8
+        this.maximumLinesInBounds = 4
 
         // how many lines we've typed
         this.typedLines = 0
+
+        // the y-coordinate offset of all the text
+        this.yOffset = 0
+
+        // the difference of the y-coordinate between lines
+        this.lineYDifference = this.LINE_SPACING + textAscent() + textDescent()
     }
 
     show() {
         fill(0, 0, 100, 3)
+        push()
+        translate(0, this.yOffset)
 
         // showBoundingBox() also returns the bottom y-coordinate of the
         // bounding box.
@@ -72,6 +80,8 @@ class Passage {
         strokeWeight(2)
         this.#drawTextCursor(charPos)
 
+        pop()
+
         noStroke()
         fill(234, 34, 24)
         beginShape()
@@ -97,7 +107,7 @@ class Passage {
         let boundingBoxTR = new p5.Vector(this.lineWrapXpos+10, this.TOP_MARGIN - textAscent() - this.LINE_SPACING)
 
         // the y-coordinate of the bottom of our bounding box
-        let boxBottomY = this.linesDisplayed*(this.LINE_SPACING + textAscent() + textDescent())
+        let boxBottomY = min(this.linesDisplayed, this.maximumLinesInBounds)*this.lineYDifference - this.lineYDifference
 
         // the bottom-left corner of our bounding box. We don't need the
         // bottom-right corner because since we only need the width and the
@@ -138,13 +148,16 @@ class Passage {
     #updateLinesTyped(i, charPos, linesDisplayedAtCurrentIndex) {
         if (linesDisplayedAtCurrentIndex === this.typedLines+1 && charPos[i].y !== charPos[i+1].y) {
             this.typedLines++
+            if (this.typedLines >= 2) {
+                this.yOffset -= this.lineYDifference
+            }
         }
     }
 
     // wraps the argument's position, where the argument is the cursor.
     #wrapCursorPosition(cursor) {
         cursor.x = this.LEFT_MARGIN
-        cursor.y += textAscent() + textDescent() + this.LINE_SPACING
+        cursor.y += this.lineYDifference
         this.linesDisplayed += 1
     }
 
