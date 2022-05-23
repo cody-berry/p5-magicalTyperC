@@ -98,6 +98,8 @@ function getCardData(cards) {
     }
 
 
+
+
     return cardData
 }
 

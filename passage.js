@@ -23,6 +23,9 @@ class Passage {
 
         // how many lines we can display that fits our bounding box.
         this.maximumLinesInBounds = 8
+
+        // how many lines we've typed
+        this.typedLines = 0
     }
 
     show() {
@@ -33,6 +36,8 @@ class Passage {
         let boxBottomY = this.#showBoundingBox()
 
         this.linesDisplayed = 0
+
+        let linesDisplayedAtCurrentIndex
 
         let cursor = new p5.Vector(this.LEFT_MARGIN, this.TOP_MARGIN)
         let charPos = [] // a list of character positions
@@ -50,6 +55,15 @@ class Passage {
             cursor.x += textWidth(char)
 
             this.#handleNewLines(i, cursor)
+
+            if (i === this.index) {
+                linesDisplayedAtCurrentIndex = this.linesDisplayed
+            }
+        }
+
+        if (!this.finished()) {
+            this.#updateLinesTyped(this.index, charPos, linesDisplayedAtCurrentIndex)
+            console.log(linesDisplayedAtCurrentIndex, charPos[this.index].y !== charPos[this.index + 1].y, this.typedLines)
         }
 
         this.#drawCurrentWordBar(charPos)
@@ -120,6 +134,14 @@ class Passage {
         }
     }
 
+    // checks if we need to increment the number of lines we've typed.
+    #updateLinesTyped(i, charPos, linesDisplayedAtCurrentIndex) {
+        if (linesDisplayedAtCurrentIndex === this.typedLines+1 && charPos[i].y !== charPos[i+1].y) {
+            this.typedLines++
+        }
+    }
+
+    // wraps the argument's position, where the argument is the cursor.
     #wrapCursorPosition(cursor) {
         cursor.x = this.LEFT_MARGIN
         cursor.y += textAscent() + textDescent() + this.LINE_SPACING
