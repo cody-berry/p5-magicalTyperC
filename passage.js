@@ -28,7 +28,7 @@ class Passage {
         this.typedLines = 0
 
         // the y-coordinate offset of all the text
-        this.yOffset = 0
+        this.yOffset = new ArrivingNumber(10, 20)
 
         // the difference of the y-coordinate between lines
         this.lineYDifference = this.LINE_SPACING + textAscent() + textDescent()
@@ -36,12 +36,13 @@ class Passage {
 
     show() {
         fill(0, 0, 100, 3)
-        push()
-        translate(0, this.yOffset)
 
         // showBoundingBox() also returns the bottom y-coordinate of the
         // bounding box.
         let boxBottomY = this.#showBoundingBox()
+
+        push()
+        translate(0, this.yOffset.yPos)
 
         this.linesDisplayed = 0
 
@@ -69,10 +70,19 @@ class Passage {
             }
         }
 
-        if (!this.finished()) {
-            this.#updateLinesTyped(this.index, charPos, linesDisplayedAtCurrentIndex)
-            console.log(linesDisplayedAtCurrentIndex, charPos[this.index].y !== charPos[this.index + 1].y, this.typedLines)
+        // this yOffset is an arriving number that doesn't update on its
+        // own, so we have to call arrive() on it to set its velocity and
+        // then add its velocity to its position
+        this.yOffset.arrive()
+        this.yOffset.update()
+
+        this.typedLines = linesDisplayedAtCurrentIndex
+
+        if (this.typedLines >= 2) {
+            this.yOffset.target -= this.lineYDifference
         }
+
+        console.log(linesDisplayedAtCurrentIndex)
 
         this.#drawCurrentWordBar(charPos)
 
@@ -141,16 +151,6 @@ class Passage {
         if (this.text.substring(i, i+1) === "\n") { // next two letters
             this.#drawReturn(textWidth(' '), textAscent(), 3, new p5.Vector(cursor.x - textWidth(' ') + 2, cursor.y))
             this.#wrapCursorPosition(cursor)
-        }
-    }
-
-    // checks if we need to increment the number of lines we've typed.
-    #updateLinesTyped(i, charPos, linesDisplayedAtCurrentIndex) {
-        if (linesDisplayedAtCurrentIndex === this.typedLines+1 && charPos[i].y !== charPos[i+1].y) {
-            this.typedLines++
-            if (this.typedLines >= 2) {
-                this.yOffset -= this.lineYDifference
-            }
         }
     }
 

@@ -93,7 +93,7 @@ function getCardData(cards) {
             'manaCost': int(card['cmc']),
             'collectorID': int(card['collector_number']),
             'artCropPNG': card['image_uris']['art_crop'],
-            'cardPNG': card['image_uris']['border_crop']
+            'cardPNG': card['image_uris']['png']
         })
     }
 
@@ -118,8 +118,6 @@ function draw() {
     image(img, width/2 + 75, 50, width/2 - 150, height-100)
 
     displayDebugCorner()
-
-
 }
 
 
@@ -132,6 +130,8 @@ function displayDebugCorner() {
     fill(0, 0, 100, 100) /* white */
     strokeWeight(0)
 
+    text(`frameRate: ${passage.yOffset.yPos.toFixed(5)}`,
+        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*2)
     text(`frameCount: ${frameCount}`,
         LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT)
     text(`frameRate: ${frameRate().toFixed(1)}`,
