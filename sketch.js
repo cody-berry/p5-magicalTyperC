@@ -28,7 +28,7 @@ function setup() {
     let cnv = createCanvas(960, 540)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
-    textFont(font, 20)
+    textFont(font, 25)
     background(234, 34, 24)
 
     /* initialize instruction div */
@@ -130,7 +130,9 @@ function displayDebugCorner() {
     fill(0, 0, 100, 100) /* white */
     strokeWeight(0)
 
-    text(`frameRate: ${passage.yOffset.yPos.toFixed(5)}`,
+    text(`scroll target: ${passage.yOffset.target.toFixed(5)}`,
+        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*3)
+    text(`scroll position: ${passage.yOffset.yPos.toFixed(5)}`,
         LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*2)
     text(`frameCount: ${frameCount}`,
         LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT)

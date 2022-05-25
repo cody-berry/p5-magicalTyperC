@@ -63,11 +63,11 @@ class Passage {
 
             cursor.x += textWidth(char)
 
-            this.#handleNewLines(i, cursor)
-
             if (i === this.index) {
                 linesDisplayedAtCurrentIndex = this.linesDisplayed
             }
+
+            this.#handleNewLines(i, cursor)
         }
 
         // this yOffset is an arriving number that doesn't update on its
@@ -79,7 +79,7 @@ class Passage {
         this.typedLines = linesDisplayedAtCurrentIndex
 
         if (this.typedLines >= 2) {
-            this.yOffset.target -= this.lineYDifference
+            this.yOffset.target = -this.lineYDifference*(this.typedLines - 1)
         }
 
         console.log(linesDisplayedAtCurrentIndex)

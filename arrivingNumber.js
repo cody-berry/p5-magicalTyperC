@@ -22,12 +22,9 @@ class ArrivingNumber {
     // Translates to: "Go towards your target as fast as possible until you
     // get close enough to slow down linearly."
     arrive() {
-        let distance = this.target-this.yPos
-        this.yVel = -this.maxSpeed
-        if (abs(distance) < this.slowDownDistance) {
-            this.yVel = map(distance, 0, this.slowDownDistance, 0, -this.maxSpeed)
-        }
-        if (distance < 0) {
+        let distance = abs(this.target - this.yPos)
+        this.yVel = map(abs(distance), 0, this.slowDownDistance, 0, this.maxSpeed, true)
+        if (this.target < this.yPos) {
             this.yVel = -this.yVel
         }
     }
