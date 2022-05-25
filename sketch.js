@@ -14,6 +14,8 @@ let incorrectSound // the sound that we're going to play when we get an
 let img // the image of the randomly-selected card in setup() or the updated
 // card in updateCard()
 let cardData // the useful data in the cards
+let cardDataIndex // what index of the cardData list is the actual card
+// that we're typing
 
 
 function preload() {
@@ -41,14 +43,24 @@ function setup() {
 
     cardData.sort(sortCardsByID)
 
-    updateCard(round(random(0, cardData.length-1)))
+    cardDataIndex = round(random(0, cardData.length-1))
+
+    updateCard(cardDataIndex)
+
+    console.log(cardDataIndex)
 }
 
 
 // selects the card with the given collector number, given that the card
 // data is sorted by the collector number
-function updateCard(collectorID) {
-    let randomCard = cardData[collectorID]
+function updateCard() {
+    if (cardDataIndex < 0) {
+        cardDataIndex = cardData.length + cardDataIndex
+    } if (cardDataIndex >= cardData.length) {
+        cardDataIndex = cardDataIndex - cardData.length
+    }
+
+    let randomCard = cardData[cardDataIndex]
 
     console.log(randomCard)
 
@@ -110,7 +122,8 @@ function draw() {
     background(234, 34, 24)
 
     if (passage.finished()) {
-        updateCard(round(random(0, cardData.length - 1)))
+        cardDataIndex = round(random(0, cardData.length-1))
+        updateCard(cardDataIndex)
     }
 
     passage.show()
@@ -130,6 +143,8 @@ function displayDebugCorner() {
     fill(0, 0, 100, 100) /* white */
     strokeWeight(0)
 
+    text(`card data index: ${cardDataIndex}`,
+        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*4)
     text(`scroll target: ${passage.yOffset.target.toFixed(5)}`,
         LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*3)
     text(`scroll position: ${passage.yOffset.yPos.toFixed(5)}`,
@@ -148,6 +163,20 @@ function keyPressed() {
         instructions.html(`<pre>
             sketch stopped</pre>`)
     } if (keyCode === 98) { // 98 is the keycode for numpad 2
+        cardDataIndex -= 10
+        updateCard(cardDataIndex)
+    } if (keyCode === 100) { // 100 is the keycode for numpad 4
+        cardDataIndex--
+        updateCard(cardDataIndex)
+    } if (keyCode === 101) { // 101 is the keycode for numpad 5
+        cardDataIndex = round(random(0, cardData.length-1))
+        updateCard(cardDataIndex)
+    } if (keyCode === 102) { // 102 is the keycode for numpad 6
+        cardDataIndex++
+        updateCard(cardDataIndex)
+    } if (keyCode === 104) { // 104 is the keycode for numpad 8
+        cardDataIndex += 10
+        updateCard(cardDataIndex)
     }
     /* a key has been typed! */
     else {
@@ -168,7 +197,7 @@ function processKeyTyped(key) {
     } if (passage.text.substring(passage.index, passage.index + 1) === "\n") {
         correctKey = "Enter"
     }
-    if (key !== "Shift" && key !== "Tab" && key !== "CapsLock") {
+    if (key !== "Shift" && key !== "Tab" && key !== "CapsLock" && key !== "Alt" && key !== "Control") {
         if (key === correctKey) {
             passage.setCorrect()
             correctSound.play()

@@ -140,8 +140,8 @@ class Passage {
     #handleNewLines(i, cursor) {
         if (this.getCurrentChar(i) === " ") {
             let restOfPassage = this.text.substring(i+1) // the text not shown
-            let nextDelimiter = restOfPassage.indexOf(" ") + i // the next
-                // space
+            let nextDelimiter = max(restOfPassage.indexOf(" "),
+                restOfPassage.indexOf("\n")) + i // the next space or enter
             let currentWord = this.text.substring(i+1, nextDelimiter+1) // the
             // current word
             if (cursor.x + textWidth(currentWord) > this.lineWrapXpos) {
