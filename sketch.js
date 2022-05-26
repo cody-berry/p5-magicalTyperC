@@ -17,6 +17,8 @@ let cardData // the useful data in the cards
 let cardDataIndex // what index of the cardData list is the actual card
 // that we're typing
 
+let debugCorner // a new class defined in the template
+
 
 function preload() {
     font = loadFont('data/consola.ttf')
@@ -30,7 +32,6 @@ function setup() {
     let cnv = createCanvas(960, 540)
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
-    textFont(font, 25)
     background(234, 34, 24)
 
     /* initialize instruction div */
@@ -48,12 +49,16 @@ function setup() {
     updateCard(cardDataIndex)
 
     console.log(cardDataIndex)
+
+    debugCorner = new CanvasDebugCorner(6)
 }
 
 
 // selects the card with the given collector number, given that the card
 // data is sorted by the collector number
 function updateCard() {
+    textFont(font, 25)
+
     if (cardDataIndex < 0) {
         cardDataIndex = cardData.length + cardDataIndex
     } if (cardDataIndex >= cardData.length) {
@@ -120,6 +125,7 @@ function getCardData(cards) {
 
 function draw() {
     background(234, 34, 24)
+    textFont(font, 25)
 
     if (passage.finished()) {
         cardDataIndex = round(random(0, cardData.length-1))
@@ -130,7 +136,12 @@ function draw() {
 
     image(img, width/2 + 75, 50, width/2 - 150, height-100)
 
-    displayDebugCorner()
+    debugCorner.setText(`card data index: ${cardDataIndex}`, 5)
+    debugCorner.setText(`scroll target: ${passage.yOffset.target.toFixed(5)}`, 4)
+    debugCorner.setText(`scroll position: ${passage.yOffset.yPos.toFixed(5)}`, 3)
+    debugCorner.setText(`frameCount: ${frameCount}`, 2)
+    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    debugCorner.show()
 }
 
 
@@ -208,4 +219,37 @@ function processKeyTyped(key) {
     }
 
     print(key + "🆚" + correctKey + ", " + passage.index)
+}
+
+/** 🧹 shows debugging info using text() 🧹 */
+class CanvasDebugCorner {
+    constructor(lines) {
+        this.size = lines
+        this.debugMsgList = [] /* initialize all elements to empty string */
+        for (let i in lines)
+            this.debugMsgList[i] = ''
+    }
+
+    setText(text, index) {
+        if (index >= this.size) {
+            this.debugMsgList[0] = `${index} ← index>${this.size} not supported`
+        } else this.debugMsgList[index] = text
+    }
+
+    show() {
+        textFont(font, 14)
+        strokeWeight(1)
+
+        const LEFT_MARGIN = 10
+        const DEBUG_Y_OFFSET = height - 10 /* floor of debug corner */
+        const LINE_SPACING = 2
+        const LINE_HEIGHT = textAscent() + textDescent() + LINE_SPACING
+        fill(0, 0, 100, 100) /* white */
+        strokeWeight(0)
+
+        for (let index in this.debugMsgList) {
+            const msg = this.debugMsgList[index]
+            text(msg, LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT * index)
+        }
+    }
 }
