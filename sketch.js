@@ -17,15 +17,36 @@ let cardData // the useful data in the cards
 let cardDataIndex // what index of the cardData list is the actual card
 // that we're typing
 
+let data = [] // a variable for just the cards in json. we'll add to it every
+// time we get the dominaria united set
+
 let debugCorner // a new class defined in the template
 
 
 function preload() {
     font = loadFont('data/consola.ttf')
-    cards = loadJSON('scryfall-dmu.json')
+    loadJSON('https://api.scryfall.com/cards/search?q=set:dmu', gotDominariaJSON)
 
     correctSound = loadSound('data/correct.wav')
     incorrectSound = loadSound('data/incorrect.wav')
+}
+
+
+// a callback function to loading the set with a code of DMU (Dominaria United)
+function gotDominariaJSON(json) {
+    cards = {
+        'object': json['object'],
+        'total_cards': json['total_cards']
+    }
+    for (let card of json['data']) {
+        data.push(card)
+    }
+
+    cards['data'] = data
+
+    if (json['has_more']) {
+        loadJSON(json['next_page'], gotDominariaJSON)
+    }
 }
 
 
@@ -34,8 +55,7 @@ function filterByMulticolor(cards) {
     // the value we're returning. contains original data.
     let result = {
         'object': cards['object'],
-        'total_cards': cards['total_cards'],
-        'has_more': cards['has_more'],
+        'total_cards': cards['total_cards']
     }
 
     if (cards['next_page']) {
@@ -47,14 +67,18 @@ function filterByMulticolor(cards) {
     let multicolorCards = []
 
     for (let card of Object.values(data)) {
-        if ((card['color_identity'].length > 1) && (card['rarity'] === ('common' || 'uncommon'))) {
+        if ((card['rarity'] !== 'rare') && (card['rarity'] !== 'mythic')) {
+            console.log(card['colors'], card['rarity'])
+        }
+        if (
+            (card['colors'].length > 1) &&
+            (card['rarity'] !== 'rare') &&
+            (card['rarity'] !== 'mythic')) {
             multicolorCards.push(card)
         }
     }
 
     result['data'] = multicolorCards
-
-    console.log(result)
 
     return result
 }
@@ -71,6 +95,8 @@ function setup() {
     instructions.html(`<pre>
         [1,2,3,4,5] → no function
         z → freeze sketch</pre>`)
+
+    console.log(filterByMulticolor(cards))
 
     cardData = getCardData(cards)
 
@@ -151,9 +177,6 @@ function getCardData(cards) {
     return cardData
 }
 
-// *=•
-// -=—
-
 function draw() {
     background(234, 34, 24)
     textFont(font, 25)
@@ -175,6 +198,8 @@ function draw() {
     debugCorner.show()
 }
 
+// *=•
+// -=—
 function keyPressed() {
     /* stop sketch */
     if (keyCode === 97) { // 97 is the keycode for numpad 1
