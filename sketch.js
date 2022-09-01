@@ -23,8 +23,40 @@ let debugCorner // a new class defined in the template
 function preload() {
     font = loadFont('data/consola.ttf')
     cards = loadJSON('scryfall-dmu.json')
+
     correctSound = loadSound('data/correct.wav')
     incorrectSound = loadSound('data/incorrect.wav')
+}
+
+
+// returns a dictionary of all the multicolor cards
+function filterByMulticolor(cards) {
+    // the value we're returning. contains original data.
+    let result = {
+        'object': cards['object'],
+        'total_cards': cards['total_cards'],
+        'has_more': cards['has_more'],
+    }
+
+    if (cards['next_page']) {
+        result['next_page'] = cards['next_page']
+    }
+
+    let data = cards['data']
+
+    let multicolorCards = []
+
+    for (let card of Object.values(data)) {
+        if ((card['color_identity'].length > 1) && (card['rarity'] === ('common' || 'uncommon'))) {
+            multicolorCards.push(card)
+        }
+    }
+
+    result['data'] = multicolorCards
+
+    console.log(result)
+
+    return result
 }
 
 
@@ -77,19 +109,18 @@ function updateCard() {
 
 // compares 2 cards by their id
 function sortCardsByID(firstCard, secondCard) {
-    if (firstCard.collectorID === secondCard.collectorID) {
-        return 0
-    } if (firstCard.collectorID < secondCard.collectorID) {
+    if (firstCard.collectorID < secondCard.collectorID) {
         return -1
     } if (firstCard.collectorID > secondCard.collectorID) {
         return 1
     }
+    return 0
 }
 
 
 // gets the data of the cards in the json file
 function getCardData(cards) {
-    let listOfCards = cards.data
+    let listOfCards = filterByMulticolor(cards)['data']
 
     // the relevant card data
     let cardData = []
