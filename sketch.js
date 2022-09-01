@@ -22,7 +22,7 @@ let debugCorner // a new class defined in the template
 
 function preload() {
     font = loadFont('data/consola.ttf')
-    cards = loadJSON('scryfall-snc.json')
+    cards = loadJSON('scryfall-dmu.json')
     correctSound = loadSound('data/correct.wav')
     incorrectSound = loadSound('data/incorrect.wav')
 }
@@ -71,7 +71,7 @@ function updateCard() {
 
     img = loadImage(randomCard['cardPNG'])
 
-    passage = new Passage(randomCard['typeText'] + " \n")
+    passage = new Passage(randomCard['typeText'] + "\n")
 }
 
 
@@ -143,29 +143,6 @@ function draw() {
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.show()
 }
-
-
-/** 🧹 shows debugging info using text() 🧹 */
-function displayDebugCorner() {
-    const LEFT_MARGIN = 10
-    const DEBUG_Y_OFFSET = height - 10 /* floor of debug corner */
-    const LINE_SPACING = 2
-    const LINE_HEIGHT = textAscent() + textDescent() + LINE_SPACING
-    fill(0, 0, 100, 100) /* white */
-    strokeWeight(0)
-
-    text(`card data index: ${cardDataIndex}`,
-        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*4)
-    text(`scroll target: ${passage.yOffset.target.toFixed(5)}`,
-        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*3)
-    text(`scroll position: ${passage.yOffset.yPos.toFixed(5)}`,
-        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT*2)
-    text(`frameCount: ${frameCount}`,
-        LEFT_MARGIN, DEBUG_Y_OFFSET - LINE_HEIGHT)
-    text(`frameRate: ${frameRate().toFixed(1)}`,
-        LEFT_MARGIN, DEBUG_Y_OFFSET)
-}
-
 
 function keyPressed() {
     /* stop sketch */

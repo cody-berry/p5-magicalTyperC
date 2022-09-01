@@ -37,9 +37,8 @@ class Passage {
     show() {
         fill(0, 0, 100, 3)
 
-        // showBoundingBox() also returns the bottom y-coordinate of the
-        // bounding box.
-        let boxBottomY = this.#showBoundingBox()
+        let boxBottomY = min(this.linesDisplayed, this.maximumLinesInBounds)*this.lineYDifference - this.lineYDifference
+        this.#showBoundingBox(boxBottomY)
 
         push()
         translate(0, this.yOffset.yPos)
