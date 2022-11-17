@@ -25,15 +25,15 @@ let debugCorner // a new class defined in the template
 
 function preload() {
     font = loadFont('data/consola.ttf')
-    loadJSON('https://api.scryfall.com/cards/search?q=set:dmu', gotDominariaJSON)
+    loadJSON('https://api.scryfall.com/cards/search?q=set:bro', gotBROJSON)
 
     correctSound = loadSound('data/correct.wav')
     incorrectSound = loadSound('data/incorrect.wav')
 }
 
 
-// a callback function to loading the set with a code of DMU (Dominaria United)
-function gotDominariaJSON(json) {
+// a callback function to loading the set with a code of BRO (The Brother's War)
+function gotBROJSON(json) {
     cards = {
         'object': json['object'],
         'total_cards': json['total_cards']
@@ -45,7 +45,7 @@ function gotDominariaJSON(json) {
     cards['data'] = data
 
     if (json['has_more']) {
-        loadJSON(json['next_page'], gotDominariaJSON)
+        loadJSON(json['next_page'], gotBROJSON)
     }
 }
 
@@ -71,7 +71,7 @@ function filterByMulticolor(cards) {
             console.log(card['colors'], card['rarity'])
         }
         if (
-            (card['colors'].length > 1) &&
+            // (card['colors'].length > 1) &&
             (card['rarity'] !== 'rare') &&
             (card['rarity'] !== 'mythic')) {
             multicolorCards.push(card)
@@ -102,7 +102,7 @@ function setup() {
 
     cardData.sort(sortCardsByID)
 
-    cardDataIndex = round(random(0, cardData.length-1))
+    cardDataIndex = 0
 
     updateCard(cardDataIndex)
 

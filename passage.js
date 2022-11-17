@@ -22,7 +22,7 @@ class Passage {
         this.linesDisplayed = 0
 
         // how many lines we can display that fits our bounding box.
-        this.maximumLinesInBounds = 4
+        this.maximumLinesInBounds = 10
 
         // how many lines we've typed
         this.typedLines = 0
@@ -77,8 +77,8 @@ class Passage {
 
         this.typedLines = linesDisplayedAtCurrentIndex
 
-        if (this.typedLines >= 2) {
-            this.yOffset.target = -this.lineYDifference*(this.typedLines - 1)
+        if (this.typedLines >= 4) {
+            this.yOffset.target = -this.lineYDifference*(this.typedLines - 3)
         }
 
         console.log(linesDisplayedAtCurrentIndex)

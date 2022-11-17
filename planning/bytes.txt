@@ -1,0 +1,2 @@
+Add progress bar with ArrivingNumber but with a bounce arrive instead
+Add glow on card. Find base size before adding a manual glow
