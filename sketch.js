@@ -92,14 +92,31 @@ function setup() {
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
-        [1,2,3,4,5] → no function
-        z → freeze sketch</pre>`)
+        Starters:
+            The collector id is 0. It is not randomized.
+        To Run:
+            Type the card.
+            After typing 3 letters, the WPM and accuracy are shown. 
+            The WPM only counts the time after you've typed the first letter. 
+            Repeat. 
+        Accepted Chars:
+            Every letter and Enter. 
+        Features:
+            numpad 1: Freeze sketch.
+            numpad 2: Subtract 10 from the collector id of the card.
+            numpad 4: Subtract 1 from the collector id of the card.
+            numpad 5: Randomize the collector id of the card.
+            numpad 6: Add 1 to the collector id of the card.
+            numpad 8: Add 10 to the collector id of the card.
+        Goal:
+            Type as fast as you can while still learning the cards!
+        </pre>`)
 
     cardData = getCardData(cards)
 
     cardData.sort(sortCardsByID)
 
-    cardDataIndex = 30
+    cardDataIndex = 0
 
     updateCard(cardDataIndex)
 
