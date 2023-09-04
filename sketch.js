@@ -25,7 +25,7 @@ let debugCorner // a new class defined in the template
 
 function preload() {
     font = loadFont('data/consola.ttf')
-    loadJSON('https://api.scryfall.com/cards/search?q=set:bro', gotBROJSON)
+    loadJSON('https://api.scryfall.com/cards/search?q=set:woe', gotWOEJSON)
 
     correctSound = loadSound('data/correct.wav')
     incorrectSound = loadSound('data/incorrect.wav')
@@ -33,7 +33,7 @@ function preload() {
 
 
 // a callback function to loading the set with a code of BRO (The Brother's War)
-function gotBROJSON(json) {
+function gotWOEJSON(json) {
     cards = {
         'object': json['object'],
         'total_cards': json['total_cards']
@@ -45,7 +45,7 @@ function gotBROJSON(json) {
     cards['data'] = data
 
     if (json['has_more']) {
-        loadJSON(json['next_page'], gotBROJSON)
+        loadJSON(json['next_page'], gotWOEJSON)
     }
 }
 
@@ -235,9 +235,6 @@ function draw() {
     stroke(0, 0, 100, 1)
     rect(width/2 + 55, 30, width/2 - 110, height-60, 30)
 
-    debugCorner.setText(`card data index: ${cardDataIndex}`, 5)
-    debugCorner.setText(`scroll target: ${passage.yOffset.target.toFixed(5)}`, 4)
-    debugCorner.setText(`scroll position: ${passage.yOffset.yPos.toFixed(5)}`, 3)
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.show()

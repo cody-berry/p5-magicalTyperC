@@ -8,8 +8,9 @@ class Passage {
 
         this.text = text
         this.index = 0 // what index are we currently typing?
-        this.correctList = [] // a list of booleans determining if we've
-        // gotten our characters correct/incorrect
+
+        // a list of booleans determining if we've gotten our characters correct/incorrect
+        this.correctList = []
 
         // where are we going to wrap our line?
         this.lineWrapXpos = width - this.RIGHT_MARGIN
@@ -32,6 +33,16 @@ class Passage {
 
         // the difference of the y-coordinate between lines
         this.lineYDifference = this.LINE_SPACING + textAscent() + textDescent()
+
+        // the amount of milliseconds that have passed before our first
+        // character
+        this.millis = 0
+
+        // the current accuracy
+        this.accuracy = 0
+
+        // the current words per minute
+        this.wpm = 0
     }
 
     show() {
@@ -91,6 +102,7 @@ class Passage {
 
         pop()
 
+        // draw the window
         noStroke()
         fill(234, 34, 24)
         beginShape()
@@ -105,6 +117,16 @@ class Passage {
         vertex(this.LEFT_MARGIN - 10, this.TOP_MARGIN - textAscent() - this.LINE_SPACING)
         endContour()
         endShape(CLOSE)
+
+        // display accuracy and speed
+        fill(0, 0, 100)
+        textSize(15)
+        textAlign(LEFT)
+        text("Accuracy           Speed\n     %                   wpm", 200, 400)
+        textAlign(RIGHT)
+        textSize(25)
+        text(`${round(this.accuracy*100)}`, 240, 425)
+        textAlign(LEFT)
     }
 
     // shows the bounding box
@@ -125,11 +147,6 @@ class Passage {
         let boundingBoxBL = new p5.Vector(this.LEFT_MARGIN-10, this.TOP_MARGIN + boxBottomY)
 
         rect(boundingBoxTL.x, boundingBoxTL.y, boundingBoxTR.x - boundingBoxTL.x, boundingBoxBL.y - boundingBoxTL.y)
-
-        // and now let's return the boxBottomY so that the caller knows the
-        // y coordinate of the bottom contour.
-
-        return boxBottomY
     }
 
     getCurrentChar(i) {
@@ -141,8 +158,7 @@ class Passage {
             let restOfPassage = this.text.substring(i+1) // the text not shown
             let nextDelimiter = min(restOfPassage.indexOf(" "),
                 restOfPassage.indexOf("\n")) + i // the next space or enter
-            let currentWord = this.text.substring(i+1, nextDelimiter+1) // the
-            // current word
+            let currentWord = this.text.substring(i+1, nextDelimiter+1)
             if (cursor.x + textWidth(currentWord) > this.lineWrapXpos) {
                 this.#wrapCursorPosition(cursor)
             }
@@ -162,13 +178,26 @@ class Passage {
 
     // sets the next character's correct status to 'true'.
     setCorrect() {
-        this.correctList.push(true)
+        if (this.correctList.length === 0) {
+            this.millis = millis()
+        }
+        // during this time, the accuracy updates
+        this.accuracy *= this.correctList.length
+        this.correctList.push(true) // records this
+        this.accuracy += 1
+        this.accuracy /= this.correctList.length
         this.#advance()
     }
 
     // sets the next character's correct status to 'false'.
     setIncorrect() {
+        if (this.correctList.length === 0) {
+            this.millis = millis()
+        }
+        // during this time, the accuracy updates
+        this.accuracy *= this.correctList.length
         this.correctList.push(false)
+        this.accuracy /= this.correctList.length
         this.#advance()
     }
 
@@ -222,7 +251,7 @@ class Passage {
 
     #drawTextCursor(charPos) {
         let cursor = charPos[this.index]
-        cursor.y += textDescent() + this.LINE_SPACING/2
+        cursor.y += textDescent()
         line(cursor.x, cursor.y, cursor.x + textWidth(' '), cursor.y)
     }
 
