@@ -68,7 +68,6 @@ function filterByMulticolor(cards) {
 
     for (let card of Object.values(data)) {
         if ((card['rarity'] !== 'rare') && (card['rarity'] !== 'mythic')) {
-            console.log(card['colors'], card['rarity'])
         }
         if (
             // (card['colors'].length > 1) &&
@@ -96,17 +95,13 @@ function setup() {
         [1,2,3,4,5] → no function
         z → freeze sketch</pre>`)
 
-    console.log(filterByMulticolor(cards))
-
     cardData = getCardData(cards)
 
     cardData.sort(sortCardsByID)
 
-    cardDataIndex = 0
+    cardDataIndex = 30
 
     updateCard(cardDataIndex)
-
-    console.log(cardDataIndex)
 
     debugCorner = new CanvasDebugCorner(6)
 }
@@ -124,8 +119,6 @@ function updateCard() {
     }
 
     let randomCard = cardData[cardDataIndex]
-
-    console.log(randomCard)
 
     img = loadImage(randomCard['cardPNG'])
 
@@ -151,14 +144,31 @@ function getCardData(cards) {
     // the relevant card data
     let cardData = []
     for (let card of listOfCards) {
-        let typeText = card['name'] + " " + card['mana_cost'] + "\n" +
-            card['type_line'] + "\n" + card['oracle_text']
-        let isThereAPowerAndToughness = new RegExp('[Cc]reature|[Vv]ehicle')
-        if (isThereAPowerAndToughness.test(card['type_line'])) {
-            typeText += "\n" + card['power'] + "/" + card['toughness']
-        }
-        if (card['flavor_text']) {
-            typeText += "\n" + card['flavor_text']
+        let typeText = ""
+        if (card["card_faces"]) {
+            for (let cardFace of card["card_faces"]) {
+                typeText += cardFace['name'] + " " + cardFace['mana_cost'] + "\n" +
+                    cardFace['type_line'] + "\n" + cardFace['oracle_text']
+                let isThereAPowerAndToughness = new RegExp('[Cc]reature|[Vv]ehicle')
+                if (isThereAPowerAndToughness.test(cardFace['type_line'])) {
+                    typeText += "\n" + cardFace['power'] + "/" + cardFace['toughness']
+                }
+                if (cardFace['flavor_text']) {
+                    typeText += "\n" + cardFace['flavor_text']
+                }
+                typeText += "\n"
+            }
+        } else {
+            typeText += card['name'] + " " + card['mana_cost'] + "\n" +
+                card['type_line'] + "\n" + card['oracle_text']
+            let isThereAPowerAndToughness = new RegExp('[Cc]reature|[Vv]ehicle')
+            if (isThereAPowerAndToughness.test(card['type_line'])) {
+                typeText += "\n" + card['power'] + "/" + card['toughness']
+            }
+            if (card['flavor_text']) {
+                typeText += "\n" + card['flavor_text']
+            }
+            typeText += "\n"
         }
 
         cardData.push({
@@ -170,9 +180,6 @@ function getCardData(cards) {
             'cardPNG': card['image_uris']['png']
         })
     }
-
-
-
 
     return cardData
 }
@@ -283,7 +290,7 @@ function processKeyTyped(key) {
     } if (passage.text.substring(passage.index, passage.index + 1) === "\n") {
         correctKey = "Enter"
     }
-    if (key !== "Shift" && key !== "Tab" && key !== "CapsLock" && key !== "Alt" && key !== "Control") {
+    if (key.length === 1 || key === "Enter") {
         if (key === correctKey) {
             passage.setCorrect()
             correctSound.play()
@@ -292,8 +299,6 @@ function processKeyTyped(key) {
             incorrectSound.play()
         }
     }
-
-    print(key + "🆚" + correctKey + ", " + passage.index)
 }
 
 /** 🧹 shows debugging info using text() 🧹 */

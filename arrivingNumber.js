@@ -1,7 +1,6 @@
 
 
 // an arriving number.
-
 class ArrivingNumber {
     // r is the distance at which we slow down. It'll become useful to know
     // that the variable assigned to 'r' has the same purpose, but globally.

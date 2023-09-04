@@ -118,15 +118,23 @@ class Passage {
         endContour()
         endShape(CLOSE)
 
+        if (this.millis !== 0)
+            this.wpm = (this.correctList.length/5)/((millis() - this.millis)/60000)
+        else
+            this.wpm = 0
+
         // display accuracy and speed
-        fill(0, 0, 100)
-        textSize(15)
-        textAlign(LEFT)
-        text("Accuracy           Speed\n     %                   wpm", 200, 400)
-        textAlign(RIGHT)
-        textSize(25)
-        text(`${round(this.accuracy*100)}`, 240, 425)
-        textAlign(LEFT)
+        if (this.correctList.length > 2) {
+            fill(0, 0, 100)
+            textSize(13)
+            textAlign(LEFT)
+            text("Accuracy           Speed\n        %               WPM", 200, 400)
+            textAlign(RIGHT)
+            textSize(25)
+            text(`${round(this.accuracy * 100)}`, 257, 425)
+            text(`${round(this.wpm)}`, 370, 425)
+            textAlign(LEFT)
+        }
     }
 
     // shows the bounding box
