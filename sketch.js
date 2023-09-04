@@ -259,6 +259,14 @@ function draw() {
     stroke(0, 0, 100, 1)
     rect(width/2 + 55, 30, width/2 - 110, height-60, 30)
 
+    if (passage.paused) {
+        fill(0, 0, 50, 50)
+        rect(0, 0, width, height)
+        textSize(60)
+        fill(0, 0, 100, 100)
+        text("PAUSED", width/2, height/2)
+    }
+
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
     debugCorner.show()
@@ -287,6 +295,8 @@ function keyPressed() {
     } if (keyCode === 104) { // 104 is the keycode for numpad 8
         cardDataIndex += 10
         updateCard(cardDataIndex)
+    } if (keyCode === ESCAPE) {
+        passage.togglePaused()
     }
     /* a key has been typed! */
     else {
@@ -314,6 +324,9 @@ function processKeyTyped(key) {
         } else {
             passage.setIncorrect()
             incorrectSound.play()
+        }
+        if (passage.paused) {
+            passage.togglePaused()
         }
     }
 }

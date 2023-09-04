@@ -43,6 +43,10 @@ class Passage {
 
         // the current words per minute
         this.wpm = 0
+
+        // the last time it was paused
+        this.lastPaused = 0
+        this.paused = false
     }
 
     show() {
@@ -118,8 +122,13 @@ class Passage {
         endContour()
         endShape(CLOSE)
 
-        if (this.millis !== 0)
-            this.wpm = (this.correctList.length/5)/((millis() - this.millis)/60000)
+        if (this.millis !== 0) {
+            let durationPaused = millis() - this.lastPaused
+            if (!this.paused) {
+                durationPaused = 0
+            }
+            this.wpm = (this.correctList.length / 5) / ((millis() - this.millis - durationPaused) / 60000)
+        }
         else
             this.wpm = 0
 
@@ -261,6 +270,17 @@ class Passage {
         let cursor = charPos[this.index]
         cursor.y += textDescent()
         line(cursor.x, cursor.y, cursor.x + textWidth(' '), cursor.y)
+    }
+
+    // toggles paused.
+    togglePaused() {
+        if (this.paused) {
+            this.paused = false
+            this.millis += millis() - this.lastPaused
+        } else {
+            this.paused = true
+            this.lastPaused = millis()
+        }
     }
 
     #drawHighlightBox(i, cursor) {
